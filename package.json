@@ -1,0 +1,20 @@
+{
+  "name": "locust",
+  "version": "1.0.0",
+  "description": "Códigos de exemplo para o locust",
+  "main": "hello_world.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Lemaf/artigo-locust.git"
+  },
+  "author": "rthoth! <ronaldo.silva@lemaf.ufla.br>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Lemaf/artigo-locust/issues"
+  },
+  "homepage": "https://github.com/Lemaf/artigo-locust#readme",
+  "dependencies": {}
+}
