@@ -71,6 +71,53 @@ Agora que você já tem o Locust instalado é hora de iniciar a simulação ou o
 
 ## O locustfile
 
-O locustfile é um arquivo com o código python do seu teste. A única exigência é que o arquivo tenha uma classe Locust, essa classe representará um usuário, ou um gafanhoto. Para explicar como fazer um teste acredito que a melhor maneira seja fazendo um teste, então vamos para o consegrado Hello World!
+O locustfile é um arquivo com o código python do seu teste. A única exigência é que o arquivo tenha uma classe Locust e essa classe representará um usuário, ou um gafanhoto. Para explicar como fazer um teste acredito que a melhor maneira seja fazendo um teste, então vamos para o consegrado Hello World!
 
-Nessa série usarei o Node.js para escrever as aplicações que serão testadas
+Nessa série usarei o [Node.js](https://nodejs.org) para escrever as aplicações que serão testadas, os códigos fonte podem ser acessados no nosso [repositório](https://github.com/Lemaf/artigo-locust/tree/artigo-1) no github.
+
+A primeira aplicação (o código fonte está [aqui](https://github.com/Lemaf/artigo-locust/blob/artigo-1/hello_world.js)) que será testada é um servidor HTTP que responderá a requisições GET com a uma *string* `Hello <nome>`, no caso `<nome>` é um parâmetro enviado na *query string* da *URL*.
+
+Então uma requisição como:
+
+> GET /qualquercoisa?nome=World
+
+Deverá ser respondida com um:
+
+> Hello World!
+
+Como testar? A seguir um exemplo de teste.
+
+```python
+from locust import HttpLocust, TaskSet, task
+import random
+
+class PrimeiroTeste(TaskSet):
+    @task
+    def test_01(self):
+        nome = random.choice(('Einstein', 'Newton', 'Maxwell', 'Faraday'))
+        with self.client.get('/', catch_response = True, params = {'nome': nome}) as response:
+            if response.text == ('Hello %s!' % nome):
+                response.success()
+            else:
+                response.failure('Resposta inesperada!')
+
+class HelloWorld(HttpLocust):
+    task_set = PrimeiroTeste
+    min_wait=50
+    max_wait=1000
+
+```
+
+### Entendo o código...
+
+Como testar no Locust basicamente é programar em python algumas bibliotecas serão necessárias. O primeiro *import* é fundamental, veja que importei as classes **HtppLocust** e **TaskSet** e o [decorator](http://nbviewer.jupyter.org/github/ricardoduarte/python-para-desenvolvedores/blob/master/Capitulo17/Capitulo17_Decoradores.ipynb) **task**.
+
+Vejamos o que importamos:
+
+* **HttpLocust** É a classe base dos nossos testes.
+* **TaskSet** Como o próprio nome diz é o conjunto de tarefas.
+* **tasks** É um *decorator*, de forma muito simples um decorator é uma função que altera outras funções, podemos dizer que o seu teste é *decorado* por outra função.
+
+#### *HttpLocust*
+
+Todo arquivo locust deve ter uma classe que seja herdeira da **HttpLocust**, isso para testes *HTTP* mas isso é uma conversa para outro momento na série. Nessa classe você precisa definir um conjunto de tarefas que serão executadas e isso é feito através do atributo *task_set* onde é definido que o conjunto de tarefas é a classe *PrimeiroTeste*.
