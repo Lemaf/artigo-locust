@@ -71,7 +71,7 @@ Agora que você já tem o Locust instalado é hora de iniciar a simulação ou o
 
 ## O locustfile
 
-Se você reparou só informei um endereço http, por padrão o Locust procura no caminho atual o arquivo locustfile.py, esse é o locustfile. O locustfile é um arquivo com o código python do seu teste e a única exigência é que o arquivo tenha uma classe Locust e essa classe representará um usuário, ou um gafanhoto. Para explicar como fazer um teste acredito que a melhor maneira seja fazendo um teste, então vamos para o consegrado ["Hello, World !"](https://pt.wikipedia.org/wiki/Programa_Olá_Mundo).
+Se você reparou só informei um endereço http, por padrão o Locust procura no caminho atual o arquivo locustfile.py, esse é o locustfile. O locustfile é um arquivo com o código python do seu teste e a única exigência é que o arquivo tenha uma classe Locust e essa classe representará um usuário, ou um gafanhoto. Para explicar como fazer um teste acredito que a melhor maneira seja fazendo um teste, então vamos para o consegrado ["Hello, World!"](https://pt.wikipedia.org/wiki/Programa_Olá_Mundo).
 
 Nessa série usarei o [Node.js](https://nodejs.org) para escrever as aplicações que serão testadas, os códigos fonte podem ser acessados no nosso [repositório](https://github.com/Lemaf/artigo-locust/tree/artigo-1) no github.
 
@@ -92,25 +92,25 @@ from locust import HttpLocust, TaskSet, task
 import random
 
 class PrimeiroTeste(TaskSet):
-    @task
-    def test_01(self):
-        nome = random.choice(('Einstein', 'Newton', 'Maxwell', 'Faraday'))
-        with self.client.get('/', catch_response = True, params = {'nome': nome}) as response:
-            if response.text == ('Hello, %s!' % nome):
-                response.success()
-            else:
-                response.failure('Resposta inesperada!')
+   @task
+   def test_01(self):
+      nome = random.choice(('Einstein', 'Newton', 'Maxwell', 'Faraday'))
+      with self.client.get('/', catch_response = True, params = {'nome': nome}) as response:
+         if response.text == ('Hello, %s!' % nome):
+            response.success()
+         else:
+            response.failure('Resposta inesperada!')
 
 class HelloWorld(HttpLocust):
-    task_set = PrimeiroTeste
-    min_wait=50
-    max_wait=1000
+   task_set = PrimeiroTeste
+   min_wait=50
+   max_wait=1000
 
 ```
 
-### Entendo o código...
+### Entendendo o código...
 
-Como testar no Locust basicamente é programar em python algumas bibliotecas serão necessárias. O primeiro *import* é fundamental, veja que importei as classes **HtppLocust** e **TaskSet** e o [decorator](http://nbviewer.jupyter.org/github/ricardoduarte/python-para-desenvolvedores/blob/master/Capitulo17/Capitulo17_Decoradores.ipynb) **task**.
+Como testar no Locust é programar em python algumas bibliotecas serão necessárias. O primeiro *import* é fundamental, veja que importei as classes **HtppLocust** e **TaskSet** e o [decorator](http://nbviewer.jupyter.org/github/ricardoduarte/python-para-desenvolvedores/blob/master/Capitulo17/Capitulo17_Decoradores.ipynb) **task**.
 
 Vejamos o que importamos:
 
@@ -120,7 +120,7 @@ Vejamos o que importamos:
 
 #### *HttpLocust*
 
-Todo arquivo locust deve ter uma classe que seja herdeira da **HttpLocust**, isso para testes *HTTP* mas isso é uma conversa para outro momento na série. Nessa classe você precisa definir um conjunto de tarefas que serão executadas e isso é feito através do atributo *task_set* onde é definimos que o conjunto de tarefas é a classe *PrimeiroTeste*.
+Todo arquivo locust deve ter uma classe que seja herdeira da **HttpLocust**, isso para testes *HTTP* mas isso é uma conversa para outro momento na série. Nessa classe você precisa definir um conjunto de tarefas que serão executadas e isso é feito através do atributo *task_set* onde definimos que o conjunto de tarefas é a classe *PrimeiroTeste*.
 
 Os atributos *max_wait* e *min_wait* controlam o intervalo, em milisegundos, entre os testes. Lembre-se para o Locust a sua classe **HttpLocust** determina o comportamento de cada usuário.
 
@@ -132,12 +132,12 @@ Nessa classe fazemos o teste acontecer.
 
 ```python
 class PrimeiroTeste(TaskSet):
-    @task
-    def test_01(self):
+   @task
+   def test_01(self):
       ...
 ```
 
-No exemplo usei o *decorator* *task* no método `test_01`, isso informa ao Locust que esse método é uma tarefa no meu teste, você pode definir mais de um método como tarefa.
+No exemplo usei o *decorator* *task* no método `test_01`, isso informa ao Locust que esse método é uma tarefa do teste, você pode definir mais de um método como tarefa.
 
 Estou considerando que você sabe alguma coisa de *Python* ou está lendo a dica do livro que passei!
 
@@ -147,48 +147,49 @@ nome = random.choice(('Einstein', 'Newton', 'Maxwell', 'Faraday'))
 with self.client.get('/', catch_response = True, params = {'nome': nome}) as response:
 
 ```
-Para fazer o teste a primeira coisa que faço é escolher um nome dentro de alguns conhecidos, feito isso uso o atributo `client`, que é do tipo **HttpSession** da *API* do Locust, e faço uma requisição *GET*, os valores da *query string* são fornecidos pelo parâmetro `params`. Para se utilizar a instrução `with` do *python* eu preciso que o retorno desse método seja um [*Statement Context*](file:///usr/share/doc/python2/html/reference/compound_stmts.html#the-with-statement) e para instruir o Locust a retornar um objeto desse tipo devemos usar o parâmetro `catch_response` (*Python* tem tipagem é dinâmica).
+Para fazer o teste a primeira coisa que faço é escolher um nome dentro de alguns conhecidos, feito isso uso o atributo `client`, que é do tipo **HttpSession** da *API* do Locust, e faço uma requisição *GET*, os valores da *query string* são fornecidos pelo parâmetro `params`. Para se utilizar a instrução `with` do *python* eu preciso que o retorno desse método seja um [*Statement Context*](file:///usr/share/doc/python2/html/reference/compound_stmts.html#the-with-statement) e para instruir o Locust a retornar um objeto desse tipo devemos usar o parâmetro `catch_response` (*Python* tem tipagem é dinâmica), qual a razão de utilizar isso? Dessa forma não preciso escrever um código com `try: ... catch: ...` para o caso de algo errado acontecer com a requisição.
 
-Se você notar bem deve ter reparado que fiz a requisição assim `self.client.get('/')` e eu poderia ter colocado algo como `self.client.get('/algumacoisa')` mas não disse onde a aplicação está sendo executada! Lembra do parâmetro `-H` lá do começo? Ele dá a *URL* base para o nosso teste, então algo como `self.client.get('/algumacoisa')` faz uma requisição para `http://localhost:8080/algumacoisa`, fica óbvia a facilidade de usar esse teste em outros ambientes para checar o seu sistema.
+Se você notar bem deve ter reparado que fiz a requisição assim `self.client.get('/')` e eu poderia ter colocado algo como `self.client.get('/algumacoisa')` mas não disse onde a aplicação está sendo executada! Lembra do parâmetro `-H` lá do começo? Ele dá a *URL* base para o nosso teste, então algo como `self.client.get('/algumacoisa')` faz uma requisição para `http://localhost:8080/algumacoisa`, mais uma coisinha para facilitar o desenvolvimento e execução em outras ambientes.
 
 ```python
 
 if response.text == ('Hello, %s!' % nome):
-          response.success()
-      else:
-          response.failure('Resposta inesperada!')
+      response.success()
+   else:
+      response.failure('Resposta inesperada!')
 
 ```
 
-Agora feita a requisição preciso testar, aqui nesse exemplo apenas testei a *string* retornada por minha aplicação. Outros testes podem ser feitos como chegar o *status* da resposta, checar cabeçalhos e etc.
+Feita a requisição preciso testar, aqui nesse exemplo apenas testei a *string* retornada por minha aplicação. Outros testes podem ser feitos como checar o *status* da resposta, cabeçalhos e etc.
 
 ### Um primeiro teste
 
-Veja como foi relativamente fácil programar o teste, só que precisamos ver o teste funcionando. Dando tudo após executar o comando o Locust imprimirá a seguinte mensagem no terminal:
+Foi relativamente fácil programar o teste, só que precisamos ver o teste funcionando. Depois de escrever o locustfile agora é voltar para o terminal e executar o locust:
+
+> locust -H http://localhost:8080
+
+Se você escreveu o arquivo corretamente você verá a seguinte mensagem no seu terminal:
 
 > .../INFO/locust.main: Starting web monitor at \*:8089
 >
 > .../INFO/locust.main: Starting Locust 0.7.5
 
-Então corra para o seu navegador favorito e acesse [http://localhost:8089](http://localhost:8089) e você verá a seguinte tela.
+Corra para o seu navegador favorito e acesse [http://localhost:8089](http://localhost:8089) e você verá a seguinte tela.
 
 ![Primeira tela](locust-00.png)
 
-Nessa tela o Locust pergunta quantos usuários você quer simular (*Number of users to simulate*) e conforme o teste vai sendo executado quantos novos usuários serão iniciados a cada segundo (*Hatch rate (users spawned/second)*), se você quiser dizer que a cada dois segundos chega um novo usuário aqui você deverá dizer 0.5, meio estranho né? Nem tudo é perfeito.
+Nessa tela o Locust pergunta quantos usuários você quer simular (*Number of users to simulate*) e também conforme o teste vai sendo executado quantos novos usuários serão iniciados a cada segundo (*Hatch rate*), se você quiser dizer que a cada dois segundos chega um novo usuário aqui você deverá dizer 0.5, meio estranho né? Nem tudo é perfeito.
 
 Feito isso aí sim você verá os seus testes sendo executados, a interface se atualiza conforma as coisas vão acontecendo.
 
 ![Tela de monitoramento](locust-01.png)
 
-
 Veja que a interface é bem simples de acompanhar, então não preciso explicar muito como usar.
-
 
 ## É preciso estressar o seu código!
 
 Aqui gostaria de chamar a atenção, tanto sua leitor como minha, para a necessidade de estressar os códigos que fazemos.
-Algumas soluções podem aparentemente funcionar muito bem em ambiente de teste generosos mas eventualmente seu problema pode crescer exigindo mais memória e/ou poder de processamento e solucionar pedindo mais não dá muito certo não. Então para exemplificar farei aqui um pequeno teste, detectar o problema, pensar numa solução e testar essa solução e ficar aliviado que a solução atendeu o problema.
-
+Algumas soluções podem aparentemente funcionar muito bem em ambiente de testes generosos mas eventualmente seu problema pode crescer exigindo mais memória e/ou poder de processamento e solucionar pedindo mais não dá muito certo não. Então para exemplificar farei aqui um pequeno teste, detectar o problema, pensar numa solução e testar essa solução e ficar aliviado que a solução atendeu o problema.
 
 ### Situação hipotética
 
