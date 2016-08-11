@@ -167,6 +167,7 @@ Agora feita a requisição preciso testar, aqui nesse exemplo apenas testei a *s
 Veja como foi relativamente fácil programar o teste, só que precisamos ver o teste funcionando. Dando tudo após executar o comando o Locust imprimirá a seguinte mensagem no terminal:
 
 > .../INFO/locust.main: Starting web monitor at \*:8089
+>
 > .../INFO/locust.main: Starting Locust 0.7.5
 
 Então corra para o seu navegador favorito e acesse [http://localhost:8089](http://localhost:8089) e você verá a seguinte tela.
