@@ -6,7 +6,7 @@ class PrimeiroTeste(TaskSet):
     def test_01(self):
         nome = random.choice(('Einstein', 'Newton', 'Maxwell', 'Faraday'))
         with self.client.get('/', catch_response = True, params = {'nome': nome}) as response:
-            if response.text == ('Hello %s!' % nome):
+            if response.text == ('Hello, %s!' % nome):
                 response.success()
             else:
                 response.failure('Resposta inesperada!')

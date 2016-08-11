@@ -4,7 +4,7 @@ var http = require('http'),
 http.createServer(function (req, res) {
 
   var nome = url.parse(req.url, true).query.nome;
-  res.end('Hello ' + nome + '!');
+  res.end('Hello, ' + nome + '!');
 
 }).listen(8080, function () {
 

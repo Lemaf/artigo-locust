@@ -1,10 +1,10 @@
 # Locust.io e a primeira onda!
 
-Já imaginou um belo dia por alguma razão inesperada ou esperada milhares de pessoas resolverem acessar o seu site? Como se preparar?
+Já imaginou um belo dia por alguma razão inesperada ou esperada milhares de pessoas resolverem acessar o seu site? Aí vem a pergunta, como se preparar?
 
-Para ajudar a se preparar vamos aprender um pouco sobre uma grande e simples ferramenta para realizar os testes de carga, o [**Locust**](http://locust.io).
+Para ajudar a se preparar vamos aprender um pouco sobre uma ferramenta muito simples para realizar os testes de carga, o [**Locust**](http://locust.io).
 
-Pretendo escrever sobre o locust em 4 artigos:
+Pretendo dividir essa série em 4 artigos:
 
 1. A primeira onda: Vamos conhecer um pouco do Locust e fazer nosso primeiro teste.
 2. Atacando com várias ondas: Veremos como executar um teste distribuído em várias máquinas.
@@ -15,9 +15,9 @@ Agora vamos para a primeira parte da série!
 
 # A primeira onda: Introdução
 
-Executar uma simulação de centenas ou milhares de usuários por si só já é um problema considerável, existem várias ferramentas mas o diferencial do Locust é que ele torna a tarefa muito simples. A primeira característica é como você deve escrever as simulações, o Locust usa como linguagem o Python, então tudo o que você precisará fazer é programar em Python!
+Executar uma simulação de centenas ou milhares de usuários por si só já é um problema considerável, existem várias ferramentas mas um diferencial do Locust é que ele torna a tarefa muito simples. A primeira característica é como você deve escrever as simulações. Se você gosta de [Python](https://www.python.org) é hora de [brilhar](https://youtu.be/lbGJfTMxlfU),  tudo o que você precisará fazer é programar em Python!
 
-A segunda característica que torna o Locust interessante é a forma como ele [simula centenas ou milhares de usuários](http://docs.locust.io/en/latest/what-is-locust.html), por exemplo, diferentemente do [JMeter](http://jmeter.apache.org) que usa uma *thread* para cada usuário o Locust é um [sistema de eventos](http://www.gevent.org) baseados em [*micro-threads*](https://greenlet.readthedocs.io/en/latest/), ou seja, você tem *pequenas threads* compartilhando tempo de processamento de uma ou poucas *threads* do sistema operacional. Essa característica permite ao Locust executar centenas de testes concorrentemente!
+A segunda característica que torna o Locust interessante é a forma como ele [simula centenas ou milhares de usuários](http://docs.locust.io/en/latest/what-is-locust.html), por exemplo, diferentemente do [JMeter](http://jmeter.apache.org) que usa uma *thread* para cada usuário o Locust é um [sistema de eventos](http://www.gevent.org) baseados em [*micro-threads*](https://greenlet.readthedocs.io/en/latest/), complicado? Talvez, simplificando bastante o Locust internamente trabalha com eventos, como o objetivo desse artigo não é esgotar esse assunto darei uma dica de como é isso, imagine que você pede para alguém abrir uma porta para você e quando essa pessoa abrir essa porta ela volta para te avisar, enquanto isso você pode pedir para outras pessoas abrirem outras portas, é mais ou menos por aí, toda comunicação que o locust faz com a sua aplicação opera de uma forma mais ou menos parecida com esse exemplo. As *micro-threads* é que ao invés do Locust solicitar ao **SO** uma *thread* e rodar cada simulação em uma *thread* o Locust solicita algumas e dentro de cada *thread* o Locust executa algumas *micro-threads*. Dessa forme ele é capaz de simular muitos usuários de forma confiável.
 
 ## Python
 
@@ -43,7 +43,7 @@ Agora se você é fã da maçã o Python também já está lá, mas caso queira 
 
 Se você é um desenvolvedor windows aí será necessário instalar o Python [Using Python on Windows](https://docs.python.org/2.7/using/windows.html).
 
-### Instalado o Locust
+### Instalando o Locust
 
 O jeito mais fácil de instalar o Locust é através do [PyPi](https://pypi.python.org/pypi). Então você apenas precisará executar isso no seu terminal:
 
@@ -67,15 +67,15 @@ Se você tiver algum problema talvez no seu sistema a solução seja a mesma que
 
 Agora que você já tem o Locust instalado é hora de iniciar a simulação ou o ataque, a diferença pode ser bem sutil. O Locust é instalado como um comando então você a princípio precisará apenas digitar:
 
-> locust -f <locustfile>
+> locust -H http://localhost:8080
 
 ## O locustfile
 
-O locustfile é um arquivo com o código python do seu teste. A única exigência é que o arquivo tenha uma classe Locust e essa classe representará um usuário, ou um gafanhoto. Para explicar como fazer um teste acredito que a melhor maneira seja fazendo um teste, então vamos para o consegrado Hello World!
+Se você reparou só informei um endereço http, por padrão o Locust procura no caminho atual o arquivo locustfile.py, esse é o locustfile. O locustfile é um arquivo com o código python do seu teste e a única exigência é que o arquivo tenha uma classe Locust e essa classe representará um usuário, ou um gafanhoto. Para explicar como fazer um teste acredito que a melhor maneira seja fazendo um teste, então vamos para o consegrado ["Hello, World !"](https://pt.wikipedia.org/wiki/Programa_Olá_Mundo).
 
 Nessa série usarei o [Node.js](https://nodejs.org) para escrever as aplicações que serão testadas, os códigos fonte podem ser acessados no nosso [repositório](https://github.com/Lemaf/artigo-locust/tree/artigo-1) no github.
 
-A primeira aplicação (o código fonte está [aqui](https://github.com/Lemaf/artigo-locust/blob/artigo-1/hello_world.js)) que será testada é um servidor HTTP que responderá a requisições GET com a uma *string* `Hello <nome>`, no caso `<nome>` é um parâmetro enviado na *query string* da *URL*.
+A primeira aplicação (o código fonte está [aqui](https://github.com/Lemaf/artigo-locust/blob/artigo-1/hello_world.js)) que será testada é um servidor HTTP que responderá a requisições GET com a uma *string* `Hello, <nome>!`, no caso `<nome>` é um parâmetro enviado na *query string* da *URL*.
 
 Então uma requisição como:
 
@@ -83,7 +83,7 @@ Então uma requisição como:
 
 Deverá ser respondida com um:
 
-> Hello World!
+> Hello, World!
 
 Como testar? A seguir um exemplo de teste.
 
@@ -96,7 +96,7 @@ class PrimeiroTeste(TaskSet):
     def test_01(self):
         nome = random.choice(('Einstein', 'Newton', 'Maxwell', 'Faraday'))
         with self.client.get('/', catch_response = True, params = {'nome': nome}) as response:
-            if response.text == ('Hello %s!' % nome):
+            if response.text == ('Hello, %s!' % nome):
                 response.success()
             else:
                 response.failure('Resposta inesperada!')
@@ -116,8 +116,79 @@ Vejamos o que importamos:
 
 * **HttpLocust** É a classe base dos nossos testes.
 * **TaskSet** Como o próprio nome diz é o conjunto de tarefas.
-* **tasks** É um *decorator*, de forma muito simples um decorator é uma função que altera outras funções, podemos dizer que o seu teste é *decorado* por outra função.
+* **task** É um *decorator*, de forma muito simples um decorator é uma função que altera outras funções, podemos dizer que o seu teste é *decorado* por esse carinha.
 
 #### *HttpLocust*
 
-Todo arquivo locust deve ter uma classe que seja herdeira da **HttpLocust**, isso para testes *HTTP* mas isso é uma conversa para outro momento na série. Nessa classe você precisa definir um conjunto de tarefas que serão executadas e isso é feito através do atributo *task_set* onde é definido que o conjunto de tarefas é a classe *PrimeiroTeste*.
+Todo arquivo locust deve ter uma classe que seja herdeira da **HttpLocust**, isso para testes *HTTP* mas isso é uma conversa para outro momento na série. Nessa classe você precisa definir um conjunto de tarefas que serão executadas e isso é feito através do atributo *task_set* onde é definimos que o conjunto de tarefas é a classe *PrimeiroTeste*.
+
+Os atributos *max_wait* e *min_wait* controlam o intervalo, em milisegundos, entre os testes. Lembre-se para o Locust a sua classe **HttpLocust** determina o comportamento de cada usuário.
+
+O atributo *task_set* pode definir mais de um conjunto de atividades, novamente vamos explorar isso nos próximos passos da nossa série.
+
+#### *TaskSet*
+
+Nessa classe fazemos o teste acontecer.
+
+```python
+class PrimeiroTeste(TaskSet):
+    @task
+    def test_01(self):
+      ...
+```
+
+No exemplo usei o *decorator* *task* no método `test_01`, isso informa ao Locust que esse método é uma tarefa no meu teste, você pode definir mais de um método como tarefa.
+
+Estou considerando que você sabe alguma coisa de *Python* ou está lendo a dica do livro que passei!
+
+```python
+
+nome = random.choice(('Einstein', 'Newton', 'Maxwell', 'Faraday'))
+with self.client.get('/', catch_response = True, params = {'nome': nome}) as response:
+
+```
+Para fazer o teste a primeira coisa que faço é escolher um nome dentro de alguns conhecidos, feito isso uso o atributo `client`, que é do tipo **HttpSession** da *API* do Locust, e faço uma requisição *GET*, os valores da *query string* são fornecidos pelo parâmetro `params`. Para se utilizar a instrução `with` do *python* eu preciso que o retorno desse método seja um [*Statement Context*](file:///usr/share/doc/python2/html/reference/compound_stmts.html#the-with-statement) e para instruir o Locust a retornar um objeto desse tipo devemos usar o parâmetro `catch_response` (*Python* tem tipagem é dinâmica).
+
+Se você notar bem deve ter reparado que fiz a requisição assim `self.client.get('/')` e eu poderia ter colocado algo como `self.client.get('/algumacoisa')` mas não disse onde a aplicação está sendo executada! Lembra do parâmetro `-H` lá do começo? Ele dá a *URL* base para o nosso teste, então algo como `self.client.get('/algumacoisa')` faz uma requisição para `http://localhost:8080/algumacoisa`, fica óbvia a facilidade de usar esse teste em outros ambientes para checar o seu sistema.
+
+```python
+
+if response.text == ('Hello, %s!' % nome):
+          response.success()
+      else:
+          response.failure('Resposta inesperada!')
+
+```
+
+Agora feita a requisição preciso testar, aqui nesse exemplo apenas testei a *string* retornada por minha aplicação. Outros testes podem ser feitos como chegar o *status* da resposta, checar cabeçalhos e etc.
+
+### Um primeiro teste
+
+Veja como foi relativamente fácil programar o teste, só que precisamos ver o teste funcionando. Dando tudo após executar o comando o Locust imprimirá a seguinte mensagem no terminal:
+
+> .../INFO/locust.main: Starting web monitor at \*:8089
+> .../INFO/locust.main: Starting Locust 0.7.5
+
+Então corra para o seu navegador favorito e acesse [http://localhost:8089](http://localhost:8089) e você verá a seguinte tela.
+
+![Primeira tela](locust-00.png)
+
+Nessa tela o Locust pergunta quantos usuários você quer simular (*Number of users to simulate*) e conforme o teste vai sendo executado quantos novos usuários serão iniciados a cada segundo (*Hatch rate (users spawned/second)*), se você quiser dizer que a cada dois segundos chega um novo usuário aqui você deverá dizer 0.5, meio estranho né? Nem tudo é perfeito.
+
+Feito isso aí sim você verá os seus testes sendo executados, a interface se atualiza conforma as coisas vão acontecendo.
+
+![Tela de monitoramento](locust-01.png)
+
+
+Veja que a interface é bem simples de acompanhar, então não preciso explicar muito como usar.
+
+
+## É preciso estressar o seu código!
+
+Aqui gostaria de chamar a atenção, tanto sua leitor como minha, para a necessidade de estressar os códigos que fazemos.
+Algumas soluções podem aparentemente funcionar muito bem em ambiente de teste generosos mas eventualmente seu problema pode crescer exigindo mais memória e/ou poder de processamento e solucionar pedindo mais não dá muito certo não. Então para exemplificar farei aqui um pequeno teste, detectar o problema, pensar numa solução e testar essa solução e ficar aliviado que a solução atendeu o problema.
+
+
+### Situação hipotética
+
+Imagine que você criou uma aplicação que
