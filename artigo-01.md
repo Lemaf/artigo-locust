@@ -188,9 +188,23 @@ Veja que a interface é bem simples de acompanhar, então não preciso explicar 
 
 ## É preciso estressar o seu código!
 
-Aqui gostaria de chamar a atenção, tanto sua leitor como minha, para a necessidade de estressar os códigos que fazemos.
+Aqui gostaria de chamar a atenção, tanto a sua leitor como a minha, para a necessidade de estressar os códigos que fazemos.
 Algumas soluções podem aparentemente funcionar muito bem em ambiente de testes generosos mas eventualmente seu problema pode crescer exigindo mais memória e/ou poder de processamento e solucionar pedindo mais não dá muito certo não. Então para exemplificar farei aqui um pequeno teste, detectar o problema, pensar numa solução e testar essa solução e ficar aliviado que a solução atendeu o problema.
 
 ### Situação hipotética
 
-Imagine que você criou uma aplicação que
+Imagine que você criou uma aplicação que em algum momento precisa realizar um cálculo com uma complexidade linear. Como o algoritmo é muito simples você optou por uma solução inocente e implementou ele da forma que aparentou mais acertada, okay, implementação feita os *testers* entram em campo e eles aprovam, o pessoal que faz a homologação faz os seus testes o sistema foi para o ar.
+
+Para exemplificar o teste farei uma aplicação Node.js ridiculamente simples que receberá um número na *query string* e usará esse número como parada em um `for`.
+
+Quando eu solicito:
+
+> GET /?numero=5000
+
+Recebo:
+
+> Foram processados 5000 dados!
+
+O código fonte está disponível [aqui](https://github.com/Lemaf/artigo-locust/blob/artigo-1/for_lento.js).
+
+Agora é hora de testar o nosso sistema hipotético, como já aprendemos o básico do locust faremos um CTRL+C CTRL+V maroto.
