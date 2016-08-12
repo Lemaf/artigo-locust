@@ -1,27 +1,23 @@
 var http = require('http'),
-    url  = require('url');
+		parse  = require('url').parse;
 
 function fatorial(n) {
-  console.log('fatorial: ' + n);
-  return (n <= 1) ? 1 : n * fatorial(n - 1);
+	return (n <= 1) ? 1 : n * fatorial(n - 1);
 }
 
 http.createServer(function (req, res) {
+	var url = parse(req.url, true);
 
-  var query = url.parse(req.url, true).query;
-  var n = parseInt(query.n);
-  var r = parseInt(query.r);
+	if (url.pathname === '/combinacao') {
+		var n = parseInt(url.query.n),
+		    r = parseInt(url.query.r);
 
-  console.log('...');
-  var numerador = fatorial(n);
-  console.log('___');
-  var denominador = fatorial(r);
-  console.log('***');
-  denominador *= fatorial(n - r);
-
-  res.end('Resultado: ' + (numerador / denominador));
+		res.end('Ok: ' + (fatorial(n) / (fatorial(r) * fatorial(n - r))));
+	} else {
+		res.end();
+	}
 
 }).listen(8080, function () {
-  console.log('Pronto!');
+	console.log('Pronto!');
 
 });
